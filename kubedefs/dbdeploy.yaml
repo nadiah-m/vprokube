@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  replicas: 1 # Number of replicas (Pods) you want to run
+  selector:
+    matchLabels:
+      app: vprodb # Label selector to identify the Pods managed by this Deployment
+  template:
+    metadata:
+      labels:
+        app: vprodb # Labels for the Pods, used by the Deployment to manage them
+    spec:
+      containers:
+        - name: vprodb
+          image: vprocontainers/vprofiledb # The Docker image to use for the container
+          volumeMounts:
+            - name: vprodb-db-data
+              mountPath: /var/lib/mysql
+          ports:
+            - name: vprodb-port
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: db-pass
+      volumes:
+        - name: vprodb-db-data
+          persistentVolumeClaim:
+            claimName: db-pv-claim
+      initContainers:
+        - name: busybox
+          image: busybox:latest
+          args: ["rm", "-rf", "/var/lib/mysql/lost+found"]
+          volumeMounts:
+            - name: vprodb-db-data
+              mountPath: /var/lib/mysql

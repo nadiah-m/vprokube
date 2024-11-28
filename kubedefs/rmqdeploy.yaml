@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprormq
+  labels:
+    app: vprormq
+spec:
+  replicas: 1 # Number of replicas (Pods) you want to run
+  selector:
+    matchLabels:
+      app: vprormq # Label selector to identify the Pods managed by this Deployment
+  template:
+    metadata:
+      labels:
+        app: vprormq # Labels for the Pods, used by the Deployment to manage them
+    spec:
+      containers:
+        - name: vprormq
+          image: rabbitmq # The Docker image to use for the container
+          ports:
+            - name: vprormq-port
+              containerPort: 5672
+          env:
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: rmq-pass
+            - name: RABBITMQ_DEFAULT_USER
+              value: "guest"

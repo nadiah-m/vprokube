@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vpromq01
+spec:
+  selector:
+    app: vprormq # This must match the labels in the Deployment
+  ports:
+    - protocol: TCP
+      port: 5672 # The port the service exposes (MySQL default port)
+      targetPort: vprormq-port # The port on the container that the service forwards to
+  type: ClusterIP

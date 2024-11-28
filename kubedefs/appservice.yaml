@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vproapp-service
+spec:
+  selector:
+    app: vproapp # This must match the labels in the Deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: vproapp-port # The port on the container that the service forwards to
+  type: ClusterIP
